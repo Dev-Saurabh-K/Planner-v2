@@ -33,7 +33,7 @@ Installation & Setup
 Clone the repository:
 
 git clone [https://github.com/Dev-Saurabh-K/Planner-v2.git](https://github.com/your-username/ai-planner-app.git)
-cd ai-planner-app
+cd planner-v2
 
 Install dependencies:
 
