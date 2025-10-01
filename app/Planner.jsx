@@ -167,7 +167,7 @@ export default function PlannerApp() {
       if (projectText.trim() === '') return;
       setIsGeneratingTasks(true);
 
-      const apiKey = NEXT_PUBLIC_GEMINI_API_KEY; // Canvas will provide this
+      const apiKey = "AIzaSyCRk5MCzVGBUg8udLrTy9-9KyiALWol25w"; // Canvas will provide this
       const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
 
       const systemPrompt = "You are a world-class project manager. Your job is to break down a user's goal into a list of small, actionable tasks. Return the tasks as a JSON array of strings.";
