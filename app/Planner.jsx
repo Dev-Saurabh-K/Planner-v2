@@ -1,7 +1,7 @@
 'use client'
 import React, { useState, useEffect } from 'react';
 
-// --- Helper Icon Components (emulating lucide-react) ---
+// svg icons diye he lucide-react se,  jake search kro lucide react
 const PlusCircle = ({ className }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
     <circle cx="12" cy="12" r="10" />
@@ -42,9 +42,7 @@ const LoaderCircle = ({ className }) => (
 );
 
 
-// --- Faux shadcn/ui Components ---
-// These are simplified versions to make the example self-contained.
-// In your actual Next.js app, you would install these from shadcn/ui.
+//custom shadcn ui component(replicate ,not actual)
 
 const Card = ({ children, className = '' }) => (
   <div className={`bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-sm ${className}`}>
@@ -112,7 +110,7 @@ const DialogTitle = ({ children, className = '' }) => <h3 className={`text-lg fo
 const DialogFooter = ({ children, className = '' }) => <div className={`flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 p-6 pt-2 ${className}`}>{children}</div>;
 
 
-// --- Main Planner Application Component ---
+// planner app idhar se start hee, useState seekh loo
 export default function PlannerApp() {
   const [tasks, setTasks] = useState([]);
   const [isAddTaskDialogOpen, setIsAddTaskDialogOpen] = useState(false);
@@ -122,7 +120,7 @@ export default function PlannerApp() {
   const [isGeneratingTasks, setIsGeneratingTasks] = useState(false);
 
 
-  // Load tasks from local storage on initial render
+  // localstorage ka use kar rhe he load karne ke liye
   useEffect(() => {
     try {
       const savedTasks = localStorage.getItem('plannerTasks');
@@ -134,7 +132,7 @@ export default function PlannerApp() {
     }
   }, []);
 
-  // Save tasks to local storage whenever they change
+  // local storage me changes save karne ke liye 
   useEffect(() => {
     localStorage.setItem('plannerTasks', JSON.stringify(tasks));
   }, [tasks]);
