@@ -32,7 +32,7 @@ npm, yarn, or pnpm
 Installation & Setup
 Clone the repository:
 
-git clone [https://github.com/your-username/ai-planner-app.git](https://github.com/your-username/ai-planner-app.git)
+git clone [https://github.com/Dev-Saurabh-K/Planner-v2.git](https://github.com/your-username/ai-planner-app.git)
 cd ai-planner-app
 
 Install dependencies:
