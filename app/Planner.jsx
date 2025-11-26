@@ -1,7 +1,7 @@
 'use client'
 import React, { useState, useEffect } from 'react';
 
-// svg icons diye he lucide-react se,  jake search kro lucide react
+// --- ICONS (Lucide React Replacements) ---
 const PlusCircle = ({ className }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
     <circle cx="12" cy="12" r="10" />
@@ -42,7 +42,7 @@ const LoaderCircle = ({ className }) => (
 );
 
 
-//custom shadcn ui component(replicate ,not actual)
+// --- CUSTOM UI COMPONENTS (Mocking shadcn/ui) ---
 
 const Card = ({ children, className = '' }) => (
   <div className={`bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-sm ${className}`}>
@@ -64,7 +64,7 @@ const Button = ({ children, onClick, className = '', variant = 'default', disabl
     ghost: "hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-800 dark:hover:text-gray-50",
   };
   return (
-    <button onClick={onClick} className={`${baseClasses} ${variantClasses[variant]} ${className}`} disabled={disabled}>
+    <button onClick={onClick} className={`${baseClasses} ${variantClasses[variant]} h-10 px-4 py-2 ${className}`} disabled={disabled}>
       {children}
     </button>
   );
@@ -84,7 +84,7 @@ const Checkbox = ({ id, checked, onCheckedChange }) => (
         role="checkbox"
         aria-checked={checked}
         onClick={() => onCheckedChange(!checked)}
-        className={`peer h-5 w-5 shrink-0 rounded-sm border border-gray-400 dark:border-gray-500 ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${checked ? 'bg-gray-900 text-gray-50 dark:bg-gray-50 dark:text-gray-900' : ''}`}
+        className={`flex items-center justify-center h-5 w-5 shrink-0 rounded-sm border border-gray-400 dark:border-gray-500 ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${checked ? 'bg-gray-900 text-gray-50 dark:bg-gray-50 dark:text-gray-900' : ''}`}
     >
         {checked && (
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
@@ -97,8 +97,8 @@ const Checkbox = ({ id, checked, onCheckedChange }) => (
 const Dialog = ({ open, onOpenChange, children }) => {
     if (!open) return null;
     return (
-        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4" onClick={() => onOpenChange(false)}>
-            <div className="relative" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4 animate-in fade-in duration-200" onClick={() => onOpenChange(false)}>
+            <div className="relative animate-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
                 {children}
             </div>
         </div>
@@ -107,10 +107,11 @@ const Dialog = ({ open, onOpenChange, children }) => {
 const DialogContent = ({ children, className = '' }) => <Card className={`w-full max-w-md ${className}`}>{children}</Card>;
 const DialogHeader = ({ children, className = '' }) => <div className={`p-6 pb-2 ${className}`}>{children}</div>;
 const DialogTitle = ({ children, className = '' }) => <h3 className={`text-lg font-semibold text-gray-900 dark:text-gray-50 ${className}`}>{children}</h3>;
-const DialogFooter = ({ children, className = '' }) => <div className={`flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 p-6 pt-2 ${className}`}>{children}</div>;
+const DialogFooter = ({ children, className = '' }) => <div className={`flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 gap-2 sm:gap-0 p-6 pt-2 ${className}`}>{children}</div>;
 
 
-// planner app idhar se start hee, useState seekh loo
+// --- MAIN PLANNER COMPONENT ---
+
 export default function PlannerApp() {
   const [tasks, setTasks] = useState([]);
   const [isAddTaskDialogOpen, setIsAddTaskDialogOpen] = useState(false);
@@ -120,7 +121,7 @@ export default function PlannerApp() {
   const [isGeneratingTasks, setIsGeneratingTasks] = useState(false);
 
 
-  // localstorage ka use kar rhe he load karne ke liye
+  // Load from LocalStorage
   useEffect(() => {
     try {
       const savedTasks = localStorage.getItem('plannerTasks');
@@ -132,7 +133,7 @@ export default function PlannerApp() {
     }
   }, []);
 
-  // local storage me changes save karne ke liye 
+  // Save to LocalStorage
   useEffect(() => {
     localStorage.setItem('plannerTasks', JSON.stringify(tasks));
   }, [tasks]);
@@ -165,21 +166,23 @@ export default function PlannerApp() {
       if (projectText.trim() === '') return;
       setIsGeneratingTasks(true);
 
-      const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY; // Canvas will provide this
-      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+      const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY; 
+      
+      if (!apiKey) {
+          alert("API Key is missing! Set NEXT_PUBLIC_GEMINI_API_KEY in your .env file.");
+          setIsGeneratingTasks(false);
+          return;
+      }
 
-      const systemPrompt = "You are a world-class project manager. Your job is to break down a user's goal into a list of small, actionable tasks. Return the tasks as a JSON array of strings.";
+      // Using the stable Gemini 1.5 Flash model
+      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`;
+
+      const systemPrompt = "You are a professional project manager. Break down the following user goal into a list of 3 to 7 actionable, concise tasks. Return ONLY a valid JSON array of strings (e.g., [\"Task 1\", \"Task 2\"]). Do not include markdown formatting.";
       
       const payload = {
-          contents: [{ parts: [{ text: `Break down this project: "${projectText}"` }] }],
-          systemInstruction: { parts: [{ text: systemPrompt }] },
-          generationConfig: {
-              responseMimeType: "application/json",
-              responseSchema: {
-                  type: "ARRAY",
-                  items: { type: "STRING" }
-              }
-          }
+          contents: [{ 
+              parts: [{ text: `Goal: "${projectText}"\n\n${systemPrompt}` }] 
+          }]
       };
 
       try {
@@ -190,25 +193,32 @@ export default function PlannerApp() {
           });
 
           if (!response.ok) {
-              throw new Error(`API call failed with status: ${response.status}`);
+              const errData = await response.json();
+              throw new Error(`API Error: ${errData.error?.message || response.statusText}`);
           }
 
           const result = await response.json();
           const candidate = result.candidates?.[0];
+          let generatedText = candidate.content?.parts?.[0]?.text;
 
-          if (candidate && candidate.content?.parts?.[0]?.text) {
-              const generatedTasks = JSON.parse(candidate.content.parts[0].text);
-              const newTasks = generatedTasks.map((taskText, index) => ({
-                  id: Date.now() + index,
-                  text: taskText,
-                  completed: false,
-              }));
-              setTasks(prevTasks => [...newTasks, ...prevTasks]);
-          } else {
-              console.error("Unexpected API response structure:", result);
-          }
+          if (generatedText) {
+              // Clean up markdown code blocks if AI adds them (```json ... ```)
+              generatedText = generatedText.replace(/```json|```/g, '').trim();
+              
+              const generatedTasks = JSON.parse(generatedText);
+              
+              if (Array.isArray(generatedTasks)) {
+                const newTasks = generatedTasks.map((taskText, index) => ({
+                    id: Date.now() + index,
+                    text: taskText,
+                    completed: false,
+                }));
+                setTasks(prevTasks => [...newTasks, ...prevTasks]);
+              }
+          } 
       } catch (error) {
           console.error("Error generating tasks:", error);
+          alert("Failed to generate tasks. Check console for details.");
       } finally {
           setIsGeneratingTasks(false);
           setProjectText('');
@@ -225,58 +235,64 @@ export default function PlannerApp() {
   
   const today = new Date();
   const dateString = today.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-
   const pendingTasks = tasks.filter(task => !task.completed);
 
   return (
-    <div className="min-h-screen w-full bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-50 p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen w-full bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-50 p-4 sm:p-6 lg:p-8 font-sans">
       <div className="max-w-4xl mx-auto">
         <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
             <div>
                 <h1 className="text-3xl font-bold tracking-tight">{getGreeting()}!</h1>
-                <p className="text-gray-500 dark:text-gray-400">{dateString}</p>
+                <p className="text-gray-500 dark:text-gray-400 mt-1">{dateString}</p>
             </div>
             <div className="flex items-center gap-2">
                 <Button variant="outline" onClick={() => setIsPlanProjectDialogOpen(true)}>
-                    <SparklesIcon className="mr-2 h-4 w-4" /> ✨ Plan a Project
+                    <SparklesIcon className="mr-2 h-4 w-4 text-yellow-500" /> ✨ Plan Project
                 </Button>
                 <Button onClick={() => setIsAddTaskDialogOpen(true)}>
-                    <PlusCircle className="mr-2 h-4 w-4" /> Add New Task
+                    <PlusCircle className="mr-2 h-4 w-4" /> Add Task
                 </Button>
             </div>
         </header>
 
         <main>
-          <Card>
+          <Card className="min-h-[500px]">
             <CardHeader>
               <CardTitle>Today's Plan</CardTitle>
               <CardDescription>
-                You have {pendingTasks.length} pending task{pendingTasks.length !== 1 ? 's' : ''}.
+                You have <span className="font-bold text-primary">{pendingTasks.length}</span> pending task{pendingTasks.length !== 1 ? 's' : ''}.
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
+              <div className="space-y-2">
                 {tasks.length > 0 ? (
                   tasks.map(task => (
-                    <div key={task.id} className="flex items-center p-3 -m-3 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-800/50 group">
+                    <div key={task.id} className="flex items-center p-3 rounded-lg border border-transparent hover:bg-gray-100 dark:hover:bg-gray-800 transition-all group">
                       <Checkbox
                         id={`task-${task.id}`}
                         checked={task.completed}
                         onCheckedChange={() => toggleTask(task.id)}
                       />
-                      <label htmlFor={`task-${task.id}`} className={`ml-3 flex-1 text-sm ${task.completed ? 'line-through text-gray-500 dark:text-gray-400' : ''}`}>
+                      <label 
+                        htmlFor={`task-${task.id}`} 
+                        className={`ml-3 flex-1 text-sm cursor-pointer select-none transition-all ${task.completed ? 'line-through text-gray-400 decoration-gray-400' : 'text-gray-700 dark:text-gray-200'}`}
+                      >
                         {task.text}
                       </label>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => deleteTask(task.id)}>
+                      <Button variant="ghost" className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => deleteTask(task.id)}>
                         <Trash2 className="h-4 w-4 text-red-500" />
                       </Button>
                     </div>
                   ))
                 ) : (
-                  <div className="text-center py-10">
-                      <CalendarIcon className="mx-auto h-12 w-12 text-gray-400"/>
-                      <h3 className="mt-2 text-sm font-semibold">No tasks yet</h3>
-                      <p className="mt-1 text-sm text-gray-500">Get started by adding a task or planning a project.</p>
+                  <div className="flex flex-col items-center justify-center py-20 text-center animate-in fade-in zoom-in duration-500">
+                      <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-full mb-4">
+                        <CalendarIcon className="h-8 w-8 text-gray-400"/>
+                      </div>
+                      <h3 className="text-lg font-semibold">No tasks yet</h3>
+                      <p className="text-sm text-gray-500 max-w-sm mt-2">
+                        Your schedule is empty. Add a task manually or let AI plan your day.
+                      </p>
                   </div>
                 )}
               </div>
@@ -312,11 +328,13 @@ export default function PlannerApp() {
           <DialogContent>
               <DialogHeader>
                   <DialogTitle>✨ Plan a New Project</DialogTitle>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Describe your project or goal, and let AI break it down into tasks for you.</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                    Describe your goal (e.g., "Plan a birthday party"), and AI will create a checklist for you.
+                  </p>
               </DialogHeader>
               <div className="p-6 pt-0">
                   <Input
-                      placeholder="e.g., Plan a team offsite for Q4"
+                      placeholder="What do you want to achieve?"
                       value={projectText}
                       onChange={(e) => setProjectText(e.target.value)}
                       onKeyPress={(e) => e.key === 'Enter' && !isGeneratingTasks && handlePlanProject()}
@@ -325,14 +343,16 @@ export default function PlannerApp() {
               </div>
               <DialogFooter>
                   <Button variant="outline" onClick={() => setIsPlanProjectDialogOpen(false)} disabled={isGeneratingTasks}>Cancel</Button>
-                  <Button onClick={handlePlanProject} disabled={isGeneratingTasks}>
+                  <Button onClick={handlePlanProject} disabled={isGeneratingTasks} className="min-w-[140px]">
                       {isGeneratingTasks ? (
                           <>
                               <LoaderCircle className="mr-2 h-4 w-4"/>
-                              Generating...
+                              Thinking...
                           </>
                       ) : (
-                          "Generate Tasks"
+                          <>
+                            <SparklesIcon className="mr-2 h-4 w-4" /> Generate
+                          </>
                       )}
                   </Button>
               </DialogFooter>
@@ -341,4 +361,3 @@ export default function PlannerApp() {
     </div>
   );
 }
-
